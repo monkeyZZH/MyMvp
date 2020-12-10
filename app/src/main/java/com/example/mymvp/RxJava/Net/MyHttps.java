@@ -19,21 +19,15 @@ import rx.functions.Func1;
 public class MyHttps extends ObjectLoader {
 
     private Context context;
-
     public MyHttps(Context context) {
         this.context = context;
     }
-
     private Dialog mDialog;
 
     //获取验证码
     public Observable<BaseBean<ArticleInfo>> getCodeBeanObservable(){
         mDialog = new ProgressDialog(context);
-
         mDialog.setTitle("数据获取中。。。");
-
-
-
         return observe(HttpManage.getServer().getCarousel())
                 .doOnSubscribe(()->mDialog.show())
                 .doOnCompleted(()->mDialog.dismiss())

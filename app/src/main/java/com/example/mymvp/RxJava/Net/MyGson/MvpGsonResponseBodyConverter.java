@@ -1,17 +1,15 @@
 package com.example.mymvp.RxJava.Net.MyGson;
 
+import com.example.mymvp.Bean.BaseBean;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.lang.reflect.Type;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 
-import okhttp3.MediaType;
 import okhttp3.ResponseBody;
 import retrofit2.Converter;
 
@@ -33,28 +31,32 @@ public class MvpGsonResponseBodyConverter<T> implements Converter<ResponseBody, 
     }
 
     @Override public T convert(ResponseBody value) throws IOException {
-        if (type == String.class) {
-            try {
-                MediaType mediaType = value.contentType();
-                Charset charset = null;
-                if (mediaType == null) {
-                    charset = mediaType.charset();
-                }
-                String s = new String(value.bytes(), charset == null ? StandardCharsets.UTF_8 : charset);
-                return (T) s;
-            } finally {
-                value.close();
-            }
-        } else {
-            JsonReader jsonReader = gson.newJsonReader(value.charStream());
-            try {
-                T result = adapter.read(jsonReader);
-                if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
-                    throw new JsonIOException("JSON document was not fully consumed.");
-                }
-                return result;
-            } finally {
-                value.close();
+
+        //原始写法看博客：https://mp.csdn.net/console/editor/html/110928151
+        JsonReader jsonReader = gson.newJsonReader(value.charStream());
+        String json = value.string();
+        try {
+            verify(json);
+//            return adapter.read(jsonReader);
+            return adapter.read(gson.newJsonReader(new StringReader(json)));
+        } finally {
+            value.close();
+        }
+    }
+
+    //可用于集中处理code报错信息
+    private static final int SUCCESS = 200;
+    private void verify(String json) {
+        BaseBean result = gson.fromJson(json, BaseBean.class);
+        if (result.getCode() != SUCCESS) {
+            int a = result.getCode();
+            switch (result.getCode()) {
+                case 29:
+                    throw new JsonIOException(result.getMessage());
+//                case TOKEN_EXPIRE:
+//                    throw new JsonIOException("JSON document was not fully consumed.");
+                default:
+                    throw new JsonIOException("不清楚什么原因！");
             }
         }
     }

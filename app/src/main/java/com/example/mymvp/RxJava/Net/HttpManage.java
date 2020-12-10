@@ -41,8 +41,5 @@ public class HttpManage {
         }
         return httpService;
     }
-
-
-
 }
 

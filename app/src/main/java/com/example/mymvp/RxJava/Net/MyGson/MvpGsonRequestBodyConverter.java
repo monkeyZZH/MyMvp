@@ -1,10 +1,10 @@
 package com.example.mymvp.RxJava.Net.MyGson;
 
+import com.example.mymvp.Bean.BaseBean;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonToken;
 
 import java.io.IOException;
 
@@ -29,12 +29,27 @@ public class MvpGsonRequestBodyConverter<T> implements Converter<ResponseBody, T
         JsonReader jsonReader = gson.newJsonReader(value.charStream());
         try {
             T result = adapter.read(jsonReader);
-            if (jsonReader.peek() != JsonToken.END_DOCUMENT) {
-                throw new JsonIOException("JSON document was not fully consumed.");
-            }
+            verify(value.string());
             return result;
         } finally {
             value.close();
         }
     }
+
+    private static final int SUCCESS = 1;
+    private void verify(String json) {
+        BaseBean result = gson.fromJson(json, BaseBean.class);
+        if (result.getCode() != SUCCESS) {
+            int a = result.getCode();
+            switch (result.getCode()) {
+                case 299:
+                    throw new JsonIOException(result.getMessage());
+//                case TOKEN_EXPIRE:
+//                    throw new JsonIOException("JSON document was not fully consumed.");
+                default:
+//                    throw new MyException("不清楚什么原因！");
+            }
+        }
+    }
+
 }

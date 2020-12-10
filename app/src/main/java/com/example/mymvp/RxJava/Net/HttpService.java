@@ -13,7 +13,7 @@ import rx.Observable;
 
 public interface HttpService {
 
-    @POST("/demo/store/getStoreById/30")
+    @POST("/demo/store/getStoreById/40")
     Observable<BaseBean<ArticleInfo>> getCarousel();
 
 }

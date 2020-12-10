@@ -38,7 +38,6 @@ public class Activity extends AppCompatActivity {
         setContentView(R.layout.fragment_ipinfo);
         ButterKnife.bind(this);
         mDialog = new ProgressDialog(this);
-
         mDialog.setTitle("数据获取中。。。");
         btIpinfo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,7 +51,7 @@ public class Activity extends AppCompatActivity {
 
                             @Override
                             public void onError(Throwable e) {
-                                Log.e("结果Throwable",e.toString());
+                                Log.e("结果Throwable",e.getMessage().toString());
                             }
 
                             @Override
@@ -62,22 +61,6 @@ public class Activity extends AppCompatActivity {
                                 Log.e("结果onNext",listBaseBean.getData().getStoreEntity().getCity()+"");
                             }
                         });
-//                        .subscribe(new Subscriber<BaseBean<List<ArticleInfo>>>() {
-//                            @Override
-//                            public void onCompleted() {
-//                                Log.e("结果onCompleted","=======");
-//                            }
-//
-//                            @Override
-//                            public void onError(Throwable e) {
-//                                Log.e("结果Throwable",e.toString());
-//                            }
-//
-//                            @Override
-//                            public void onNext(ArticleInfo articleInfo) {
-//                                Log.e("结果onNext",articleInfo.getMessage().toString());
-//                            }
-//                        });
 
             }
         });
